@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# work — launch or attach an isolated Claude Code session for one client.
+#
+#   work                 list configured clients
+#   work <slug>          start/attach a tmux session running Claude Code with
+#                        Remote Control on (drive it from laptop, phone, or browser)
+#   work <slug> code     open VS Code in that client's workspace with isolation set
+#   work <slug> shell    drop into a plain shell with that client's env exported
+#
+# Isolation applied per client:
+#   CLAUDE_CONFIG_DIR      -> $OE_HOME/config/<slug>  (separate login/MCP/credentials)
+#   GIT_AUTHOR/COMMITTER   -> from clients.conf    (commits can't cross clients)
+#   GIT_SSH_COMMAND        -> client's ssh key     (pushes use the right key)
+
+set -euo pipefail
+
+# Defaults to the directory this script lives in; override with OE_HOME.
+OE_HOME="${OE_HOME:-$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")" && pwd)}"
+CONF="$OE_HOME/clients.conf"
+
+die() { printf 'work: %s\n' "$1" >&2; exit 1; }
+
+[ -f "$CONF" ] || die "no config at $CONF"
+
+# Expand a leading ~ in a path field.
+expand() { case "$1" in "~"/*) printf '%s' "${HOME}/${1#\~/}";; *) printf '%s' "$1";; esac; }
+
+list_clients() {
+  echo "Configured clients (edit $CONF to change):"
+  grep -vE '^\s*(#|$)' "$CONF" | while IFS='|' read -r slug account _; do
+    printf '  %-12s %s\n' "$(echo "$slug" | xargs)" "[$(echo "$account" | xargs)]"
+  done
+}
+
+slug="${1:-}"
+mode="${2:-tmux}"
+
+if [ -z "$slug" ]; then list_clients; exit 0; fi
+
+# Find the row for this slug.
+row="$(grep -vE '^\s*(#|$)' "$CONF" | awk -F'|' -v s="$slug" '{ gsub(/^[ \t]+|[ \t]+$/,"",$1); if ($1==s) print }')"
+[ -n "$row" ] || { echo "unknown client: $slug"; echo; list_clients; exit 1; }
+
+IFS='|' read -r f_slug f_account f_gname f_gemail f_sshkey f_ws <<<"$row"
+gname="$(echo "$f_gname"  | xargs)"
+gemail="$(echo "$f_gemail" | xargs)"
+sshkey="$(echo "$f_sshkey" | xargs)"
+ws="$(echo "$f_ws"     | xargs)"
+
+config_dir="$OE_HOME/config/$slug"
+[ "$ws" = "-" ] || [ -z "$ws" ] && workspace="$OE_HOME/$slug" || workspace="$(expand "$ws")"
+
+mkdir -p "$config_dir" "$workspace"
+
+# Build the environment this session runs under.
+env_lines=(
+  "export CLAUDE_CONFIG_DIR='$config_dir'"
+  "export GIT_AUTHOR_NAME='$gname'"
+  "export GIT_COMMITTER_NAME='$gname'"
+  "export GIT_AUTHOR_EMAIL='$gemail'"
+  "export GIT_COMMITTER_EMAIL='$gemail'"
+)
+if [ "$sshkey" != "-" ] && [ -n "$sshkey" ]; then
+  env_lines+=("export GIT_SSH_COMMAND='ssh -i $(expand "$sshkey") -o IdentitiesOnly=yes'")
+fi
+
+case "$mode" in
+  shell)
+    for l in "${env_lines[@]}"; do eval "$l"; done
+    cd "$workspace" && exec "${SHELL:-/bin/zsh}"
+    ;;
+  code)
+    command -v code >/dev/null || die "VS Code 'code' command not on PATH"
+    for l in "${env_lines[@]}"; do eval "$l"; done
+    exec code "$workspace"
+    ;;
+  tmux)
+    command -v tmux   >/dev/null || die "tmux not installed (brew install tmux)"
+    command -v claude >/dev/null || die "claude not on PATH"
+    session="oe-$slug"
+    if tmux has-session -t "$session" 2>/dev/null; then
+      exec tmux attach -t "$session"
+    fi
+    tmux new-session -d -s "$session" -c "$workspace"
+    for l in "${env_lines[@]}"; do tmux send-keys -t "$session" "$l" C-m; done
+    tmux send-keys -t "$session" "claude --remote-control --name '$slug'" C-m
+    echo "started $session  (config: $config_dir)"
+    echo "detach with Ctrl-b d;  it keeps running after you close VS Code."
+    exec tmux attach -t "$session"
+    ;;
+  *)
+    die "unknown mode: $mode (use: tmux | code | shell)"
+    ;;
+esac

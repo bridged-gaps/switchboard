@@ -1,0 +1,15 @@
+# switchboard client registry — copy to clients.conf (gitignored). One row per client.
+# Fields (pipe-delimited):  slug | account | git_name | git_email | ssh_key | workspace
+#
+#   slug       short name you'll type:  `./work acme`
+#   account    a label for YOU: which Claude login this client uses (e.g. own | client)
+#   git_name   name commits should use for this client
+#   git_email  email commits should use for this client
+#   ssh_key    path to the SSH key for this client's git remote (or - for your default)
+#   workspace  where this client's repos live (or - to default to <repo>/<slug>)
+#
+# Each client automatically gets its OWN isolated CLAUDE_CONFIG_DIR at <repo>/config/<slug>:
+# separate Claude login, MCP servers, and credentials, so clients never mix.
+
+acme   | own    | Alex Example | alex@acme.example   | ~/.ssh/id_acme   | ~/Work/acme
+globex | client | Alex Example | alex@globex.example | -                | -

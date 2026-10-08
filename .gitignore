@@ -1,0 +1,32 @@
+# ALLOWLIST: ignore everything, then opt in what's shareable.
+# This repo lives next to client workspaces, per-client Claude logins (config/), and
+# personal job-search data, so nothing is committed unless it's listed here on purpose.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/CONTRIBUTING.md
+!/work
+!/clients.conf.example
+!/.claude/
+/.claude/*
+!/.claude/commands/
+!/hunt/
+
+# hunt: personal + generated files stay local
+/hunt/*
+!/hunt/hunt.py
+!/hunt/sources.py
+!/hunt/resolve.py
+!/hunt/prompts/
+!/hunt/resume/
+/hunt/resume/*
+!/hunt/resume/master.example.md
+!/hunt/profile.example.md
+!/hunt/config.example.json
+!/hunt/run.sh
+!/hunt/install-schedule.sh
+!/hunt/README.md
+
+.DS_Store
+__pycache__/
