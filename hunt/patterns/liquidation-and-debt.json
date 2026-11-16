@@ -1,0 +1,47 @@
+{
+ "id": "liquidation-and-debt",
+ "title": "Health, liquidation incentives, bad debt and epoch boundaries",
+ "weight": 5,
+ "categories": [
+  "Lending",
+  "CDP",
+  "Perpetuals",
+  "Derivatives",
+  "Yield Aggregator"
+ ],
+ "impacts": [
+  "Protocol insolvency",
+  "Theft of user funds",
+  "Permanent freezing of funds",
+  "Griefing"
+ ],
+ "detectors": {
+  "slither": [
+   "incorrect-equality",
+   "divide-before-multiply",
+   "timestamp"
+  ],
+  "aderyn": [
+   "dangerous-strict-equality-on-contract-balance",
+   "block-timestamp-deadline"
+  ],
+  "semgrep": [
+   "no-slippage-check",
+   "basic-oracle-manipulation"
+  ]
+ },
+ "confirm": [
+  "Can a position be made unliquidatable (dust, blocked token, revert in a hook)?",
+  "Does the liquidation incentive exceed what the collateral can pay at the boundary; who absorbs bad debt?",
+  "Epoch or accrual boundary: can an action be timed just before or after accrual to skip or double it?",
+  "Credit delegation / intermediate vaults: is the delegated limit re-checked after price moves?"
+ ],
+ "references": [],
+ "grep": {
+  "liquidation": "function\\s+\\w*liquidat\\w*\\s*\\(",
+  "health-check": "healthFactor|isHealthy|checkLiquidity|collateralRatio|\\bltv\\b|LTV|liquidationThreshold",
+  "epoch-boundary": "\\bepoch\\w*\\b",
+  "bad-debt": "badDebt|socializ|writeOff|shortfall|insolv",
+  "credit-limit": "creditLimit|delegat\\w*Credit|borrowCap|supplyCap|maxBorrow"
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "id": "vault-share-accounting",
+ "title": "Vault / share accounting (ERC-4626 style)",
+ "weight": 5,
+ "categories": [
+  "Asset Management",
+  "Yield Aggregator",
+  "Lending",
+  "Liquid Staking",
+  "Staking",
+  "Stablecoin",
+  "CDP"
+ ],
+ "impacts": [
+  "Theft of unclaimed yield",
+  "Protocol insolvency",
+  "Permanent freezing of funds",
+  "Theft of user funds"
+ ],
+ "detectors": {
+  "slither": [
+   "divide-before-multiply",
+   "incorrect-equality",
+   "tautology",
+   "uninitialized-state"
+  ],
+  "aderyn": [
+   "dangerous-strict-equality-on-contract-balance",
+   "unsafe-casting",
+   "division-before-multiplication"
+  ],
+  "semgrep": [
+   "erc4626-share-inflation",
+   "basic-oracle-manipulation"
+  ]
+ },
+ "confirm": [
+  "Which direction does every share<->asset conversion round, and does the protocol pay or receive the rounding on deposit, mint, withdraw and redeem?",
+  "Is total-asset accounting driven by balanceOf (donatable) or by internal bookkeeping?",
+  "What protects the first deposit / empty-vault state?",
+  "Do fee accrual, performance fee and loss socialisation update the same accounting the share price reads?",
+  "Is any of this in the program's known issues or an audit finding already?"
+ ],
+ "references": [
+  "https://docs.openzeppelin.com/contracts/4.x/erc4626",
+  "https://github.com/crytic/slither/wiki/Detector-Documentation"
+ ],
+ "grep": {
+  "balance-as-total-assets": "balanceOf\\(\\s*address\\(this\\)\\s*\\)",
+  "empty-supply-branch": "totalSupply\\(\\)\\s*==\\s*0|_totalSupply\\s*==\\s*0|supply\\s*==\\s*0",
+  "share-conversion": "function\\s+(convertTo(Shares|Assets)|preview(Deposit|Mint|Withdraw|Redeem)|_convertTo\\w+)\\s*\\(",
+  "explicit-rounding": "Rounding\\.(Floor|Ceil|Up|Down)|mulDivUp|mulDivDown|divUp\\(|roundUp",
+  "fee-accrual": "function\\s+\\w*(accrue|harvest|settle|distribute|socializ)\\w*\\s*\\("
+ }
+}

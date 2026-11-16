@@ -1,0 +1,39 @@
+{
+ "id": "signature-and-replay",
+ "title": "Signatures, nonces, domain separation, replay",
+ "weight": 3,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Direct theft of user funds",
+  "Theft of unclaimed yield"
+ ],
+ "detectors": {
+  "slither": [
+   "encode-packed-collision"
+  ],
+  "aderyn": [
+   "hash-collision-due-to-abi-encode-packed"
+  ],
+  "semgrep": [
+   "missing-nonce-replay",
+   "arbitrary-ecrecover",
+   "signature-malleability"
+  ]
+ },
+ "confirm": [
+  "Nonce, deadline, chainId, verifying contract all in the digest? Zero-address return of ecrecover handled?",
+  "Can a valid signature be replayed on another chain the program also lists?",
+  "abi.encodePacked with two dynamic fields in anything hashed?"
+ ],
+ "references": [
+  "https://eips.ethereum.org/EIPS/eip-712"
+ ],
+ "grep": {
+  "ecrecover": "ecrecover\\(|ECDSA\\.recover\\(|tryRecover\\(|isValidSignature\\(",
+  "nonce": "\\bnonces?\\b",
+  "encode-packed-hash": "keccak256\\(\\s*abi\\.encodePacked\\(",
+  "domain-separator": "DOMAIN_SEPARATOR|_domainSeparator|chainid"
+ }
+}

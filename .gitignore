@@ -18,6 +18,11 @@
 !/hunt/hunt.py
 !/hunt/sources.py
 !/hunt/resolve.py
+!/hunt/govcon.py
+!/hunt/bounty.py
+!/hunt/recon.py
+!/hunt/patterns/
+!/hunt/ui.py
 !/hunt/prompts/
 !/hunt/resume/
 /hunt/resume/*

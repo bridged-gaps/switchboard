@@ -1,0 +1,45 @@
+{
+ "id": "bridge-message-verification",
+ "title": "Cross-chain message, claim and finality handling",
+ "weight": 5,
+ "categories": [
+  "Bridge",
+  "Crosschain Liquidity",
+  "L2",
+  "L1"
+ ],
+ "impacts": [
+  "Direct theft of user funds",
+  "Protocol insolvency",
+  "Permanent freezing of funds",
+  "Temporary freezing of funds"
+ ],
+ "detectors": {
+  "slither": [
+   "msg-value-loop",
+   "delegatecall-loop",
+   "arbitrary-send-eth"
+  ],
+  "aderyn": [
+   "out-of-order-retryable",
+   "delegatecall-in-loop"
+  ],
+  "semgrep": [
+   "arbitrary-low-level-call",
+   "unrestricted-transferownership"
+  ]
+ },
+ "confirm": [
+  "How is the source chain and sender authenticated on the receiving side; who can submit a message?",
+  "Is a message id consumed exactly once, and does the id include chain ids on both ends?",
+  "What finality does the relayer assume, and what happens on reorg or a failed execution (refund path, retry path)?",
+  "Fee and native-value handling on the claim path: who ends up holding dust or overpayment?"
+ ],
+ "references": [],
+ "grep": {
+  "chain-id": "block\\.chainid|chainId|srcChain|dstChain|sourceChain|destinationChain",
+  "message-id": "messageId|msgId|transferId|submissionId|nonce",
+  "proof-verify": "verify(Proof|Message|Signature|Merkle)|MerkleProof\\.|processMessage|receiveMessage|claim\\(",
+  "relayer-role": "relayer|validator|oracle|guardian|executor"
+ }
+}

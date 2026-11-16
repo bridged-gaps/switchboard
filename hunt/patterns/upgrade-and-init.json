@@ -1,0 +1,47 @@
+{
+ "id": "upgrade-and-init",
+ "title": "Proxy, initializer and storage layout",
+ "weight": 3,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Permanent freezing of funds",
+  "Direct theft of user funds",
+  "Protocol insolvency"
+ ],
+ "detectors": {
+  "slither": [
+   "unprotected-upgrade",
+   "uninitialized-state",
+   "uninitialized-storage",
+   "shadowing-state",
+   "constant-function-state"
+  ],
+  "aderyn": [
+   "unprotected-initializer",
+   "uninitialized-state-variable",
+   "state-variable-shadowing",
+   "storage-array-edit-with-memory",
+   "multiple-constructors"
+  ],
+  "semgrep": [
+   "proxy-storage-collision",
+   "uninitialized-implementation"
+  ]
+ },
+ "confirm": [
+  "Is the implementation initialised (explorer meta says proxy / implementation)? Is the initializer reachable again?",
+  "Does the storage layout match between versions; any gaps changed?",
+  "For explorer scope: is the address the proxy or the implementation, and which one is in scope?"
+ ],
+ "references": [
+  "https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies"
+ ],
+ "grep": {
+  "initializer": "function\\s+(initialize|init|__\\w+_init)\\s*\\(",
+  "disable-initializers": "_disableInitializers\\(\\)",
+  "upgrade-hook": "function\\s+(_authorizeUpgrade|upgradeTo|upgradeToAndCall)\\s*\\(",
+  "storage-slot": "bytes32\\s+(internal\\s+|private\\s+)?constant\\s+\\w*(SLOT|_STORAGE|Storage)\\w*\\s*="
+ }
+}

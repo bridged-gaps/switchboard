@@ -1,0 +1,52 @@
+{
+ "id": "oracle-and-pricing",
+ "title": "Price inputs, staleness, manipulation surface",
+ "weight": 4,
+ "categories": [
+  "Lending",
+  "CDP",
+  "Stablecoin",
+  "Perpetuals",
+  "Derivatives",
+  "Synthetic Assets",
+  "Options",
+  "DEX",
+  "AMM",
+  "Yield Aggregator",
+  "Asset Management"
+ ],
+ "impacts": [
+  "Protocol insolvency",
+  "Theft of user funds",
+  "Theft of unclaimed yield"
+ ],
+ "detectors": {
+  "slither": [
+   "incorrect-equality",
+   "divide-before-multiply"
+  ],
+  "aderyn": [
+   "unsafe-casting"
+  ],
+  "semgrep": [
+   "basic-oracle-manipulation",
+   "keeper-network-oracle-manipulation",
+   "chainlink-missing-staleness-check",
+   "no-slippage-check"
+  ]
+ },
+ "confirm": [
+  "Where does every price come from; is any of it a spot read from a pool, a share price, or an unchecked round?",
+  "Staleness, sequencer-up, min/max answer and decimals handled?",
+  "What can a single large transaction move inside one block that this code then trusts?"
+ ],
+ "references": [
+  "https://docs.chain.link/data-feeds"
+ ],
+ "grep": {
+  "chainlink-read": "latestRoundData\\(|latestAnswer\\(",
+  "spot-pool-read": "getReserves\\(|slot0\\(|get_dy\\(|getAmountsOut\\(",
+  "share-price-as-oracle": "pricePerShare|getRate\\(|exchangeRate(Stored|Current)?\\(|convertToAssets\\(1e",
+  "staleness-field": "updatedAt|answeredInRound|heartbeat|maxStale|STALE"
+ }
+}

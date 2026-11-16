@@ -1,0 +1,44 @@
+{
+ "id": "token-transfer-safety",
+ "title": "Token transfer return values, fee-on-transfer, rebasing, decimals",
+ "weight": 3,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Theft of user funds",
+  "Protocol insolvency",
+  "Permanent freezing of funds"
+ ],
+ "detectors": {
+  "slither": [
+   "unchecked-transfer",
+   "erc20-interface",
+   "erc721-interface",
+   "incorrect-erc20-interface"
+  ],
+  "aderyn": [
+   "unsafe-erc20-operation",
+   "unchecked-return",
+   "incorrect-erc20-interface"
+  ],
+  "semgrep": [
+   "erc20-unchecked-transfer",
+   "missing-safe-transfer"
+  ]
+ },
+ "confirm": [
+  "Which tokens are actually in scope (program asset list), and do any of them return false, charge fees, rebase, or have non-18 decimals?",
+  "Does accounting use the amount requested or the amount received?",
+  "Permit / approval race conditions on the path?"
+ ],
+ "references": [
+  "https://github.com/d-xo/weird-erc20"
+ ],
+ "grep": {
+  "raw-transfer": "(?<!safe)[tT]ransfer(From)?\\(\\s*(?!\\s*\\))",
+  "balance-delta": "balance(Before|After|Prior|Pre|Post)\\b",
+  "decimals-math": "decimals\\(\\)\\s*[\\)\\-\\+]|10\\s*\\*\\*\\s*\\(?\\s*(18\\s*-|decimals)",
+  "permit": "\\.permit\\("
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "reentrancy",
+ "title": "Re-entrancy across external calls",
+ "weight": 4,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Theft of user funds",
+  "Protocol insolvency",
+  "Theft of unclaimed yield"
+ ],
+ "detectors": {
+  "slither": [
+   "reentrancy-eth",
+   "reentrancy-no-eth",
+   "reentrancy-benign",
+   "reentrancy-events",
+   "reentrancy-unlimited-gas"
+  ],
+  "aderyn": [
+   "reentrancy-state-change",
+   "unchecked-send"
+  ],
+  "semgrep": [
+   "compound-borrowfresh-reentrancy",
+   "erc777-reentrancy",
+   "erc721-reentrancy",
+   "curve-readonly-reentrancy",
+   "no-slippage-check"
+  ]
+ },
+ "confirm": [
+  "Which state is read after the external call, and by whom (same contract, sibling contract, view used by another protocol)?",
+  "Are hooks or callbacks possible on the token or receiver involved (ERC-777, ERC-721/1155, custom tokens)?",
+  "Is the guard shared across the contracts that touch the same state?",
+  "Read-only reentrancy: does any external integration price off a view that can be observed mid-update?"
+ ],
+ "references": [
+  "https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities"
+ ],
+ "grep": {
+  "native-call": "\\.call\\{\\s*value",
+  "callback-entrypoint": "function\\s+(onERC721Received|onERC1155Received|tokensReceived|onFlashLoan|receiveFlashLoan|uniswapV3SwapCallback|uniswapV3FlashCallback|executeOperation|onMorphoFlashLoan)\\s*\\(",
+  "hook-call": "\\.(onFlashLoan|receiveFlashLoan|executeOperation|hook|onDeposit|onWithdraw|beforeTransfer|afterTransfer)\\s*\\("
+ }
+}
