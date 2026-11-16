@@ -165,7 +165,8 @@
       "toronto",
       "vancouver",
       "amsterdam"
-    ]
+    ],
+    "company_exclude": []
   },
   "scoring": {
     "model": "sonnet",
@@ -223,5 +224,251 @@
     "senior backend engineer",
     "contract .NET developer"
   ],
-  "linkedin_pages": 2
+  "linkedin_pages": 2,
+  "dice_queries": [
+    ".NET developer",
+    "C# developer",
+    "golang",
+    "payments engineer",
+    "backend engineer"
+  ],
+  "dice_pages": 2,
+  "linkedin_contract_queries": [
+    ".NET developer",
+    "C# developer",
+    "golang developer",
+    "backend engineer"
+  ],
+  "govcon": {
+    "sources": [
+      "recompete",
+      "utah",
+      "sbir",
+      "sam"
+    ],
+    "naics": [
+      "541511",
+      "541512",
+      "541519"
+    ],
+    "keywords": [
+      "payment",
+      "fraud",
+      "identity verification",
+      "financial management",
+      "modernization",
+      "blockchain",
+      "transaction",
+      "anti-money laundering",
+      "case management",
+      "legacy"
+    ],
+    "min_value": 1000000,
+    "max_value": 20000000,
+    "recompete_months": 18,
+    "state_title_regex": "software|system|application|portal|data|digital|web|payment|modernization|integration|platform|cloud|IT ",
+    "sbir_title_regex": "software|data|identity|fraud|payment|financ|blockchain|ledger|transaction|cloud|agentic|AI\\b|LLM|decision|cyber|authentic|audit",
+    "sam_api_key": ""
+  },
+  "bounty": {
+    "_filters": "mirror Immunefi's panel; empty list = no filter. Values: ecosystem ETH/Arbitrum/Optimism/Base/Solana/...; language Solidity/Rust/Go/Typescript/...; product_type L1/L2/Bridge/Lending/DEX/Staking/Stablecoin/...; program_type 'Smart Contract'/'Blockchain/DLT'/'Websites and Applications'; project_type Defi/Blockchain/Infrastructure; kyc any|required|not_required",
+    "ecosystem": [],
+    "language": [
+      "Solidity",
+      "Go",
+      "Vyper",
+      "Yul"
+    ],
+    "product_type": [],
+    "program_type": [
+      "Smart Contract",
+      "Blockchain/DLT"
+    ],
+    "project_type": [],
+    "kyc": "any",
+    "min_max_bounty": 10000,
+    "exclude_paused": true,
+    "exclude_invite_only": true,
+    "preferences": "Optimise for the chance of a valid paid finding, not headline payout: small and mid-size programs, newly launched programs, recently added scope, stale or missing audits, mediums/lows paid without PoC, Vault-backed rewards. Headline bounties above $1M are crowded and should score lower unless the scope has a Go client or bridge component where the researcher's experience is rare. Preferred scope: Go-based clients, bridges and cross-chain messaging, stablecoin/payment-style value flows, lending accounting. KYC is acceptable; pay-to-submit is a strong negative.",
+    "etherscan_api_key": "",
+    "sources": [
+      "immunefi",
+      "hackerone",
+      "curated"
+    ],
+    "hackerone": {
+      "_filters": "web-track programs must be in `industries`; fintech / c-cpp / crypto tracks pass regardless. Top bounty is the program's published top payout.",
+      "min_top_bounty": 5000,
+      "min_response_efficiency": 50,
+      "industries": [
+        "Financial Services & Insurance"
+      ],
+      "exclude_tracks": [],
+      "exclude_handles": [],
+      "c_cpp_handles": [
+        "nodejs",
+        "ruby",
+        "mongodb",
+        "brave"
+      ],
+      "c_cpp_repos": [
+        "workerd",
+        "cb-mpc$",
+        "brave-core",
+        "nodejs/node",
+        "ruby/ruby",
+        "orb-firmware",
+        "moq-rs",
+        "libvips",
+        "ffmpeg",
+        "imagemagick",
+        "sqlite",
+        "openssl",
+        "curl"
+      ],
+      "_c_cpp": "c_cpp_handles pins a program to the c-cpp track (no bounty/efficiency floor applied). c_cpp_repos flags C/C++ code inside programs on other tracks; the flag is shown to the scorer."
+    },
+    "curated": [
+      {
+        "name": "Google Chrome VRP",
+        "url": "https://bughunters.google.com/about/rules/chrome-friends/5745167867576320/chrome-vulnerability-reward-program-rules",
+        "track": "c-cpp",
+        "max_bounty": 250000,
+        "languages": [
+          "C/C++"
+        ],
+        "categories": [
+          "Browser"
+        ],
+        "notes": "Chromium browser. Pays for memory-safety bugs with a reproducer; higher tiers for demonstrated exploitability and for renderer/sandbox escapes. Fuzzer-found crashes in Blink, V8 parsers, media and PDFium are the approachable end. Public issue tracker, clear reward table."
+      },
+      {
+        "name": "Google Open Source Software VRP",
+        "url": "https://bughunters.google.com/about/rules/open-source/6521337925468160/google-open-source-software-vulnerability-reward-program-rules",
+        "track": "c-cpp",
+        "max_bounty": 31337,
+        "languages": [
+          "C/C++",
+          "Go",
+          "Python"
+        ],
+        "categories": [
+          "Open source"
+        ],
+        "notes": "Google-maintained open source (Go, Angular, Bazel, Fuchsia, Protobuf, and others). Supply-chain and memory-safety bugs. Go projects are in scope, which matches the researcher directly."
+      },
+      {
+        "name": "Google OSS-Fuzz integration rewards",
+        "url": "https://google.github.io/oss-fuzz/getting-started/integration-rewards/",
+        "track": "c-cpp",
+        "max_bounty": 20000,
+        "languages": [
+          "C/C++",
+          "Go",
+          "Rust"
+        ],
+        "categories": [
+          "Open source",
+          "Fuzzing"
+        ],
+        "notes": "Pays for integrating widely used open-source projects into OSS-Fuzz and for improving fuzz coverage. The cleanest way to get paid while rebuilding C/C++ fluency: write harnesses, no exploit needed."
+      },
+      {
+        "name": "Mozilla Security Bug Bounty",
+        "url": "https://www.mozilla.org/en-US/security/client-bug-bounty/",
+        "track": "c-cpp",
+        "max_bounty": 100000,
+        "languages": [
+          "C/C++",
+          "Rust",
+          "JavaScript"
+        ],
+        "categories": [
+          "Browser"
+        ],
+        "notes": "Firefox client bugs. Memory-safety and sandbox issues; a crash with a root cause and reproducer qualifies at the lower tiers. Open source, builds locally, good fuzzing surface in parsers and media."
+      },
+      {
+        "name": "Microsoft Bug Bounty Programs",
+        "url": "https://www.microsoft.com/en-us/msrc/bounty",
+        "track": "c-cpp",
+        "max_bounty": 250000,
+        "languages": [
+          "C/C++",
+          "C#"
+        ],
+        "categories": [
+          "OS",
+          "Cloud"
+        ],
+        "notes": "Windows, Hyper-V, Azure, Edge, .NET and others. The .NET and Azure programs fit the researcher's C#/.NET and cloud background better than the kernel tiers."
+      },
+      {
+        "name": "Apple Security Bounty",
+        "url": "https://security.apple.com/bounty/",
+        "track": "c-cpp",
+        "max_bounty": 2000000,
+        "languages": [
+          "C/C++",
+          "Objective-C",
+          "Swift"
+        ],
+        "categories": [
+          "OS"
+        ],
+        "notes": "Top payouts are for full chains and zero-click. Not a first-year target; listed for reference."
+      },
+      {
+        "name": "Zero Day Initiative",
+        "url": "https://www.zerodayinitiative.com/",
+        "track": "c-cpp",
+        "max_bounty": 500000,
+        "languages": [
+          "C/C++"
+        ],
+        "categories": [
+          "Broker"
+        ],
+        "notes": "Buys working exploits for browsers, VMs, enterprise software, ICS. Requires a working exploit, not a crash. Later-stage target once fuzzing has produced results."
+      },
+      {
+        "name": "GitHub Security Lab Bounty",
+        "url": "https://securitylab.github.com/bounties/",
+        "track": "c-cpp",
+        "max_bounty": 7500,
+        "languages": [
+          "C/C++",
+          "Go",
+          "Java"
+        ],
+        "categories": [
+          "Open source",
+          "Tooling"
+        ],
+        "notes": "Pays for CodeQL queries that find vulnerability classes across open source. Rewards tooling and variant analysis, which suits a pattern-library approach."
+      },
+      {
+        "name": "Anthropic Model Safety Bug Bounty",
+        "url": "https://www.anthropic.com/news/model-safety-bug-bounty",
+        "track": "ai",
+        "max_bounty": 25000,
+        "languages": [],
+        "categories": [
+          "AI"
+        ],
+        "notes": "Universal jailbreak findings against safety classifiers; invitation-based rounds run through HackerOne. Listed for awareness; separate from product/infra bugs."
+      },
+      {
+        "name": "OpenAI Bug Bounty (Bugcrowd)",
+        "url": "https://bugcrowd.com/openai",
+        "track": "ai",
+        "max_bounty": 100000,
+        "languages": [],
+        "categories": [
+          "AI"
+        ],
+        "notes": "Product, API and infrastructure bugs. Top tier is for critical infrastructure findings. Ordinary web/API logic issues pay at the lower tiers."
+      }
+    ]
+  }
 }

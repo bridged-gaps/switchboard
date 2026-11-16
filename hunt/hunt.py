@@ -67,7 +67,7 @@ def log(*a):
 
 def db():
     os.makedirs(os.path.dirname(DB), exist_ok=True)
-    c = sqlite3.connect(DB)
+    c = sqlite3.connect(DB, timeout=60)
     c.row_factory = sqlite3.Row
     c.executescript("""
     CREATE TABLE IF NOT EXISTS jobs (
@@ -89,6 +89,7 @@ def db():
         if col not in cols:
             c.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
     c.execute("UPDATE jobs SET track='lead' WHERE track='bg_lead'")  # renamed track
+    c.commit()  # don't hold a write lock open (parallel drafts block on it)
     return c
 
 
@@ -123,6 +124,9 @@ def has_any(text, markers):
 
 
 def passes(j, pf, from_ats):
+    company = j["company"].lower()
+    if any(x.lower() in company for x in pf.get("company_exclude", [])):
+        return False
     title = f" {j['title'].lower()} "
     if not any(k in title for k in pf["title_include"]):
         return False

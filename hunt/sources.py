@@ -223,9 +223,12 @@ def linkedin_guest(cfg):
     ok = lambda t: (any(k in f" {t.lower()} " for k in pf["title_include"])
                     and not any(k in f" {t.lower()} " for k in pf["title_exclude"]))
     cards = {}
-    for q in cfg.get("linkedin_queries", []):
+    searches = [(q, {}) for q in cfg.get("linkedin_queries", [])]
+    searches += [(q, {"f_JT": "C"}) for q in cfg.get("linkedin_contract_queries", [])]  # contract only
+    for q, extra in searches:
         for page in range(cfg.get("linkedin_pages", 2)):
-            p = {"keywords": q, "f_WT": 2, "f_TPR": "r604800", "geoId": 103644278, "start": page * 10}
+            p = {"keywords": q, "f_WT": 2, "f_TPR": "r604800", "geoId": 103644278, "start": page * 10,
+                 **extra}
             s = _get("https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?"
                      + urllib.parse.urlencode(p))
             for block in s.split("</li>"):
@@ -258,7 +261,58 @@ def linkedin_guest(cfg):
     return out
 
 
+def dice(cfg):
+    """Dice public search: remote contracts posted in the last week (C2C/1099/W2 contract work lives here).
+    Logged-out pages only, title-prefiltered, 1 req/sec."""
+    import time
+    import urllib.parse
+    pf = cfg["prefilter"]
+    ok = lambda t: (any(k in f" {t.lower()} " for k in pf["title_include"])
+                    and not any(k in f" {t.lower()} " for k in pf["title_exclude"]))
+    cards = {}
+    for q in cfg.get("dice_queries", []):
+        for page in range(1, cfg.get("dice_pages", 2) + 1):
+            p = {"q": q, "filters.workplaceTypes": "Remote", "filters.employmentType": "CONTRACTS",
+                 "filters.postedDate": "SEVEN", "page": page}
+            s = _get("https://www.dice.com/jobs?" + urllib.parse.urlencode(p))
+            for chunk in s.split('data-testid="job-search-job-card-link"')[1:]:
+                m = re.search(r'href="/job-detail/([0-9a-f-]{36})"', chunk)
+                if not m:
+                    continue
+                body = chunk[chunk.find(">") + 1:6000]  # chunk starts mid-tag
+                f = [x.strip() for x in strip_html(re.sub(r"<[^>]+>", "|", body)).split("|")
+                     if x.strip() and x.strip() != "•"]
+                # card text: title, company, location, posted, [Easy Apply], terms, rate
+                if len(f) >= 3:
+                    cards.setdefault(m.group(1), dict(title=f[0], company=f[1], location=f[2],
+                                                      rest=" | ".join(f[3:7])))
+            time.sleep(1)
+    out = []
+    for jid, c in cards.items():
+        if not ok(c["title"]):
+            continue
+        try:
+            s = _get(f"https://www.dice.com/job-detail/{jid}")
+        except Exception:
+            continue
+        time.sleep(1)
+        desc, posted, salary = "", "", ""
+        for blob in re.findall(r'<script type="application/ld\+json"[^>]*>(.*?)</script>', s, re.S):
+            try:
+                d = json.loads(blob)
+            except ValueError:
+                continue
+            if isinstance(d, dict) and d.get("@type") == "JobPosting":
+                desc, posted = strip_html(d.get("description", "")), d.get("datePosted", "")
+                salary = str((d.get("baseSalary") or {}).get("value", ""))
+        out.append(_job("dice", jid, f"https://www.dice.com/job-detail/{jid}", c["title"], c["company"],
+                        c["location"], salary if salary not in ("$DOE", "") else "", posted,
+                        f"Terms: {c['rest']}\n\n{desc}", kind_hint=c["rest"]))
+    return out
+
+
 AGGREGATORS = {
+    "dice": dice,
     "linkedin": linkedin_guest,
     "workable": workable_search,
     "hn": hn_whos_hiring,

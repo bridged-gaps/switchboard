@@ -1,0 +1,37 @@
+{
+ "id": "low-level-calls",
+ "title": "Unchecked low-level calls and return data",
+ "weight": 2,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Permanent freezing of funds",
+  "Griefing"
+ ],
+ "detectors": {
+  "slither": [
+   "unchecked-lowlevel",
+   "unchecked-send",
+   "low-level-calls",
+   "return-bomb"
+  ],
+  "aderyn": [
+   "unchecked-low-level-call",
+   "return-bomb",
+   "unchecked-send"
+  ],
+  "semgrep": [
+   "unchecked-low-level-call"
+  ]
+ },
+ "confirm": [
+  "Is the failure of this call silently swallowed on a path that moves funds or records state?",
+  "Can the callee be chosen by an outside party (return-bomb, gas griefing)?"
+ ],
+ "references": [],
+ "grep": {
+  "low-level-call": "\\.(call|staticcall|delegatecall)\\(",
+  "ignored-success": "\\(\\s*bool\\s+\\w*\\s*,\\s*\\)\\s*=|\\(\\s*,\\s*bytes\\s+memory|\\.call\\([^;]*\\);\\s*(?!require|if)"
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "id": "access-control",
+ "title": "Missing or wrong access control / privileged paths",
+ "weight": 4,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Direct theft of user funds",
+  "Protocol insolvency",
+  "Permanent freezing of funds",
+  "Griefing"
+ ],
+ "detectors": {
+  "slither": [
+   "arbitrary-send-eth",
+   "arbitrary-send-erc20",
+   "arbitrary-send-erc20-permit",
+   "controlled-delegatecall",
+   "suicidal",
+   "unprotected-upgrade",
+   "tx-origin",
+   "missing-zero-check"
+  ],
+  "aderyn": [
+   "arbitrary-transfer-from",
+   "unprotected-initializer",
+   "centralization-risk",
+   "selfdestruct",
+   "delegatecall-in-loop"
+  ],
+  "semgrep": [
+   "erc20-public-transfer",
+   "erc20-public-burn",
+   "uniswap-callback-not-protected",
+   "balancer-readonly-reentrancy",
+   "no-bidi-characters",
+   "arbitrary-send-erc20",
+   "use-ownable2step"
+  ]
+ },
+ "confirm": [
+  "Who can call it, who is the program's trust model saying is trusted (owner/manager attacks are usually out of scope), and is this reachable by an untrusted party?",
+  "transferFrom with a caller-supplied `from`: can an approval to this contract be spent by someone else?",
+  "Callback entry points (flash, swap, receive): is the caller validated against the expected pool/factory?"
+ ],
+ "references": [
+  "https://github.com/crytic/slither/wiki/Detector-Documentation"
+ ],
+ "grep": {
+  "transferfrom-caller-supplied-from": "transferFrom\\(\\s*(?!msg\\.sender\\b|address\\(this\\)\\b)[A-Za-z_][\\w\\.]*\\s*,",
+  "delegatecall": "\\.delegatecall\\(",
+  "selfdestruct": "selfdestruct\\(",
+  "tx-origin": "tx\\.origin",
+  "public-no-modifier-setter": "function\\s+set\\w+\\([^)]*\\)\\s+(public|external)\\s*(?!.*(only|auth|requires|when))[^{]*\\{"
+ }
+}

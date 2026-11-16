@@ -1,0 +1,43 @@
+{
+ "id": "dos-and-griefing",
+ "title": "Denial of service, unbounded loops, forced reverts",
+ "weight": 2,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Temporary freezing of funds",
+  "Permanent freezing of funds",
+  "Griefing",
+  "Smart contract unable to operate due to lack of token funds"
+ ],
+ "detectors": {
+  "slither": [
+   "calls-loop",
+   "costly-loop",
+   "msg-value-loop",
+   "locked-ether",
+   "mapping-deletion"
+  ],
+  "aderyn": [
+   "costly-operations-inside-loops",
+   "enumerable-loop-removal",
+   "deletion-nested-mapping",
+   "dynamic-array-length-assignment",
+   "cache-array-length"
+  ],
+  "semgrep": [
+   "unbounded-loop"
+  ]
+ },
+ "confirm": [
+  "Can an outside party grow the loop or make one element revert?",
+  "Is there an admin path that recovers, and does the program count admin-recoverable freezes as in scope (usually 'temporary freezing')?"
+ ],
+ "references": [],
+ "grep": {
+  "loop-over-dynamic": "for\\s*\\([^;]*;\\s*\\w+\\s*<\\s*\\w+\\.length",
+  "unbounded-push": "\\.push\\(",
+  "external-call-in-loop": "for\\s*\\([^{]*\\{[^}]*\\.(call|transfer|safeTransfer|transferFrom)\\("
+ }
+}

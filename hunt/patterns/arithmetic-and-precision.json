@@ -1,0 +1,45 @@
+{
+ "id": "arithmetic-and-precision",
+ "title": "Rounding, precision loss, casting, overflow in unchecked blocks",
+ "weight": 3,
+ "categories": [
+  "*"
+ ],
+ "impacts": [
+  "Theft of unclaimed yield",
+  "Protocol insolvency",
+  "Griefing"
+ ],
+ "detectors": {
+  "slither": [
+   "divide-before-multiply",
+   "incorrect-exp",
+   "tautology",
+   "boolean-cst",
+   "weak-prng"
+  ],
+  "aderyn": [
+   "unsafe-casting",
+   "incorrect-shift-order",
+   "dangerous-unary-operator",
+   "incorrect-caret-operator",
+   "weak-randomness"
+  ],
+  "semgrep": [
+   "unchecked-math",
+   "incorrect-use-of-pow"
+  ]
+ },
+ "confirm": [
+  "Is the loss per operation attacker-triggerable repeatedly, or bounded once?",
+  "Does rounding favour the protocol on the user->protocol leg and vice versa?",
+  "Any unchecked block or downcast on a value an outside party can grow?"
+ ],
+ "references": [],
+ "grep": {
+  "unchecked-block": "unchecked\\s*\\{",
+  "narrow-cast": "\\buint(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|160|192)\\s*\\(",
+  "signed-cast": "\\bint(8|16|32|64|128|256)\\s*\\(\\s*\\w",
+  "div-then-mul": "/\\s*[\\w\\.\\(\\)]+\\s*\\*\\s*[\\w\\.\\(]"
+ }
+}
